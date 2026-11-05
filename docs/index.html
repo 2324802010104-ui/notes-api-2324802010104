@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<title>Bài 1 - Hello Cloud</title>
+</head>
+<body>
+<h1>So sánh máy cá nhân và Codespace</h1>
+<table border="1" cellpadding="8">
+  <tr><th>Tiêu chí</th><th>Máy cá nhân</th><th>Codespace</th></tr>
+  <tr><td>Thời gian chạy được node -v</td><td>Khoảng 10 phút (tải và cài Node.js)</td><td>3 phút</td></tr>
+  <tr><td>Số CPU, RAM</td><td>8 lõi (12 luồng), 15.7 GB RAM</td><td>2 CPU, 7.8 GB</td></tr>
+  <tr><td>Hệ điều hành</td><td>Windows 11</td><td>Linux 6.8.0-1064-azure (Ubuntu)</td></tr>
+  <tr><td>Truy cập từ thiết bị khác</td><td>Phải cùng mạng LAN, mở firewall</td><td>Đặt cổng Public, mở URL bằng điện thoại</td></tr>
+  <tr><td>Chi phí</td><td>Điện, tiền mua máy</td><td>Core-giờ (xem Billing → Usage)</td></tr>
+</table>
+
+<h2>5 đặc tính NIST</h2>
+<table border="1" cellpadding="8">
+  <tr><th>Đặc tính</th><th>Thao tác vừa làm</th></tr>
+  <tr><td>On-demand self-service</td><td>Tự tạo Codespace, không cần xin ai</td></tr>
+  <tr><td>Broad network access</td><td>Mở URL công khai bằng điện thoại</td></tr>
+  <tr><td>Resource pooling</td><td>Máy ảo lấy từ kho tài nguyên chung của GitHub (host codespaces-cc9577)</td></tr>
+  <tr><td>Rapid elasticity</td><td>Tạo xong trong khoảng 3 phút, dừng hoặc xóa bất cứ lúc nào</td></tr>
+  <tr><td>Measured service</td><td>Xem core-giờ đã dùng ở Billing → Usage</td></tr>
+</table>
+</body>
+</html>
