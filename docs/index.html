@@ -24,5 +24,36 @@
   <tr><td>Rapid elasticity</td><td>Tạo xong trong khoảng 3 phút, dừng hoặc xóa bất cứ lúc nào</td></tr>
   <tr><td>Measured service</td><td>Xem core-giờ đã dùng ở Billing → Usage</td></tr>
 </table>
+<section id="bai2" style="margin-top:40px;font-family:sans-serif;line-height:1.5">
+<h2>Bài 2. Ảo hóa, container và mô phỏng trung tâm dữ liệu</h2>
+<p>Image công khai trên GHCR: <code>ghcr.io/2324802010104-ui/notes-api:1.0</code><br>
+Link package: <a href="https://github.com/users/2324802010104-ui/packages/container/package/notes-api">github.com/users/2324802010104-ui/packages/container/package/notes-api</a></p>
+
+<h3>Bảng 1. So sánh Codespace (máy ảo) và container notes2</h3>
+<table border="1" cellpadding="6" style="border-collapse:collapse">
+<tr><th>Tiêu chí</th><th>Codespace (máy ảo)</th><th>Container notes2</th></tr>
+<tr><td>Thời gian khởi động</td><td>Khoảng 3 phút (bài 1: 1:56 PM đến 1:59 PM)</td><td>Khoảng 0,4 giây (real 0m0.399s)</td></tr>
+<tr><td>Kích thước</td><td>15 GB-tháng hạn mức đĩa</td><td>251MB (nén 63.3MB)</td></tr>
+<tr><td>Nhân hệ điều hành</td><td>Riêng</td><td>Dùng chung với máy chủ (cùng 6.8.0-1070-azure)</td></tr>
+<tr><td>Mức cô lập</td><td>Mạnh: nhân và phần cứng ảo riêng</td><td>Nhẹ hơn: cô lập ở mức tiến trình (namespace, cgroups)</td></tr>
+</table>
+
+<h3>Bảng 2. Kết quả bốn lần chạy CloudSim Plus</h3>
+<table border="1" cellpadding="6" style="border-collapse:collapse">
+<tr><th>Lần</th><th>Thay đổi</th><th>Thời điểm hoàn thành cloudlet cuối (giây mô phỏng)</th></tr>
+<tr><td>0</td><td>Giữ nguyên</td><td>20.1</td></tr>
+<tr><td>1</td><td>Nhân đôi VMS (2 lên 4)</td><td>45.6 (chỉ đặt được Vm 0, Vm 1; cloudlet bắt đầu muộn ở 25.6)</td></tr>
+<tr><td>2</td><td>Nhân đôi CLOUDLETS (4 lên 8)</td><td>40.1 (chỉ 4/8 cloudlet hoàn thành)</td></tr>
+<tr><td>3</td><td>Đổi sang CloudletSchedulerSpaceShared</td><td>20.1</td></tr>
+</table>
+
+<h3>Câu hỏi phản biện</h3>
+<p><b>1. Vì sao API trong container notes2 vẫn báo memoryGB bằng RAM máy chủ dù đã giới hạn 128 MB? Ứng dụng Java hoặc Node.js cần lưu ý gì?</b><br>
+Container dùng chung nhân với máy chủ, API đọc thông tin từ nhân nên thấy toàn bộ tài nguyên của máy (2 CPU, 7.8 GB). Giới hạn --cpus và --memory do cgroups áp đặt từ bên ngoài, chỉ hiện ở docker stats (12.86MiB / 128MiB). Ứng dụng không nên tin con số RAM đọc được để tự cấp phát bộ nhớ; nếu dùng quá 128 MB, container sẽ bị tắt (OOM). Với Node.js nên đặt giới hạn heap phù hợp (ví dụ --max-old-space-size). Với Java nên kiểm tra và cấu hình bộ nhớ theo giới hạn container (ví dụ -XX:MaxRAMPercentage).</p>
+<p><b>2. Time-shared và space-shared khác nhau ra sao trong kết quả Lần 3? Nhà cung cấp đám mây hướng thị trường chọn chính sách nào cho gói giá rẻ, vì sao?</b><br>
+Time-shared cho các cloudlet cùng chia CPU cùng lúc; space-shared cho cloudlet dùng riêng số lõi cần thiết, cloudlet còn lại xếp hàng chờ khi hết lõi. Ở Lần 3 không thấy khác biệt (cùng 20.1 giây như Lần 0) vì mỗi máy ảo có 4 lõi, đủ cho 2 cloudlet cần 2 lõi, không cloudlet nào phải chờ. Với gói giá rẻ, nhà cung cấp thường chọn time-shared để nhiều khách chia sẻ một máy, chi phí mỗi khách thấp hơn, đổi lại có thể chậm hơn khi tải cao. Đây là lập luận theo nguyên lý, chưa được kiểm chứng riêng bằng thí nghiệm.</p>
+<p><b>3. Mô phỏng giúp ích gì trước khi thuê hạ tầng thật, và có thể sai lệch với thực tế ở điểm nào?</b><br>
+Mô phỏng cho thử nhiều cấu hình mà không tốn tiền thuê, và phát hiện sớm vấn đề như thiếu lõi (Lần 1) hay thiếu RAM và băng thông (Lần 2). Kết quả có thể sai lệch vì mô hình đơn giản: tác vụ cố định, không tính đầy đủ độ trễ mạng, tranh chấp tài nguyên với người dùng khác, sự cố phần cứng hay biến động tải. Vì vậy chỉ nên dùng để so sánh và định hướng.</p>
+</section>
 </body>
 </html>
